@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IT-Vragenuurtje</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;600&family=Source+Sans+3:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --cream: #f7f4ef; --warm-white: #fdfcfa;
+      --ink: #1c1a18; --ink-light: #5a5650; --ink-faint: #9e9890;
+      --accent: #4a7c59; --accent-light: #e8f0eb; --accent-dark: #3a6347;
+      --border: #e2ddd6; --booked: #c9b99a; --booked-bg: #f5efe6;
+      --admin: #2c5f8a; --admin-light: #e8f0f7;
+      --red: #a0522d; --red-bg: #fdf0e8;
+    }
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: var(--cream); color: var(--ink);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; padding: 56px 16px 80px;
+    }
+    header { text-align: center; margin-bottom: 40px; max-width: 900px; width: 100%; }
+    .kop { font-family: 'Lora', serif; font-size: 2rem; font-weight: 600; letter-spacing: -0.02em; margin-bottom: 10px; }
+    .ondertitel { font-size: 1rem; font-weight: 300; color: var(--ink-light); line-height: 1.65; }
+
+    /* ── TWEE-KOLOM LAYOUT ── */
+    .pagina-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 24px;
+      width: 100%;
+      max-width: 820px;
+      align-items: start;
+    }
+    .hoofd-kolom { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+    /* ── INFO BLOK ── */
+    .info-blok {
+      background: var(--warm-white);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px 26px;
+      position: sticky;
+      top: 24px;
+    }
+    .info-blok-titel {
+      font-family: 'Lora', serif;
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-bottom: 16px;
+    }
+    .info-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .info-item:last-child { margin-bottom: 0; }
+    .info-emoji {
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .info-item-tekst {
+      font-size: 0.83rem;
+      color: var(--ink-light);
+      line-height: 1.6;
+    }
+    .info-item-tekst strong {
+      display: block;
+      font-weight: 500;
+      color: var(--ink);
+      margin-bottom: 1px;
+      font-size: 0.85rem;
+    }
+    .info-scheidslijn {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 16px 0;
+    }
+    .info-voetnoot {
+      font-size: 0.78rem;
+      color: var(--ink-faint);
+      line-height: 1.5;
+      font-style: italic;
+    }
+
+    /* ── DATUM BLOK ── */
+    .datum-blok {
+      background: var(--warm-white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px 32px;
+      width: 100%;
+      display: flex; align-items: center; gap: 24px;
+    }
+    .datum-kalender {
+      background: var(--accent); color: #fff;
+      border-radius: 10px; padding: 10px 14px;
+      text-align: center; flex-shrink: 0; min-width: 58px;
+    }
+    .datum-maand-kort { font-size: 0.65rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.85; }
+    .datum-dag-getal { font-family: 'Lora', serif; font-size: 2.2rem; font-weight: 600; line-height: 1; }
+    .datum-titel { font-family: 'Lora', serif; font-size: 1.05rem; font-weight: 600; margin-bottom: 4px; }
+    .datum-details { font-size: 0.85rem; color: var(--ink-light); line-height: 1.5; }
+    .teller-rij { margin-top: 10px; display: flex; align-items: center; gap: 8px; }
+    .teller-balk-wrapper { flex: 1; background: #e8e4de; border-radius: 99px; height: 6px; overflow: hidden; }
+    .teller-balk { height: 100%; background: var(--accent); border-radius: 99px; transition: width 0.4s ease; }
+    .teller-label { font-size: 0.78rem; font-weight: 500; color: var(--accent); white-space: nowrap; }
+    .teller-label.vol { color: var(--booked); }
+
+    /* ── LAADSCHERM ── */
+    .laad-scherm { color: var(--ink-faint); font-size: 0.9rem; padding: 20px 0; width: 100%; text-align: center; }
+
+    /* ── FORMULIER ── */
+    .form-card { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; padding: 32px; width: 100%; }
+    .form-titel { font-family: 'Lora', serif; font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+    .veld-groep { margin-bottom: 16px; }
+    .veld-label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--ink-light); margin-bottom: 6px; }
+    .veld-input, .veld-textarea {
+      width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Source Sans 3', sans-serif; font-size: 0.92rem; color: var(--ink);
+      background: var(--cream); outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .veld-input:focus, .veld-textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,124,89,0.12); }
+    .veld-textarea { resize: vertical; min-height: 90px; }
+    .btn-aanmelden {
+      width: 100%; padding: 12px; background: var(--accent); color: #fff;
+      border: none; border-radius: 9px; font-family: 'Source Sans 3', sans-serif;
+      font-size: 0.95rem; font-weight: 500; cursor: pointer; margin-top: 8px;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-aanmelden:hover { background: var(--accent-dark); transform: translateY(-1px); }
+    .btn-aanmelden:disabled { background: var(--ink-faint); cursor: not-allowed; transform: none; }
+    .fout-melding { font-size: 0.82rem; color: var(--red); background: var(--red-bg); border-radius: 7px; padding: 8px 12px; margin-top: 12px; display: none; }
+    .fout-melding.zichtbaar { display: block; }
+
+    /* ── SUCCES ── */
+    .succes-card { background: #f0fdf4; border: 1px solid #b7e4c7; border-radius: 14px; padding: 40px 32px; width: 100%; text-align: center; display: none; }
+    .succes-card.zichtbaar { display: block; }
+    .succes-icoon { font-size: 2.5rem; margin-bottom: 12px; }
+    .succes-titel { font-family: 'Lora', serif; font-size: 1.2rem; font-weight: 600; color: #2d6a4f; margin-bottom: 8px; }
+    .succes-tekst { font-size: 0.88rem; color: var(--ink-light); line-height: 1.6; }
+
+    /* ── VOL / GEEN SESSIE ── */
+    .info-kaart { background: var(--warm-white); border: 1px solid var(--border); border-radius: 14px; padding: 40px 32px; width: 100%; text-align: center; display: none; }
+    .info-kaart.zichtbaar { display: block; }
+    .info-icoon { font-size: 2rem; margin-bottom: 10px; }
+    .info-tekst { font-family: 'Lora', serif; font-size: 1rem; color: var(--ink-light); line-height: 1.6; }
+
+    /* ── VERBINDINGSFOUT ── */
+    .verbinding-fout { background: var(--red-bg); border: 1px solid #f0c8b0; border-radius: 12px; padding: 20px 24px; width: 100%; font-size: 0.88rem; color: var(--red); line-height: 1.6; display: none; text-align: center; }
+    .verbinding-fout.zichtbaar { display: block; }
+    .verbinding-fout strong { display: block; margin-bottom: 6px; font-size: 0.95rem; }
+
+    /* ── ADMIN ── */
+    .admin-link { margin-top: 48px; font-size: 0.75rem; color: var(--ink-faint); background: none; border: none; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+    .admin-link:hover { color: var(--ink-light); }
+    footer { margin-top: 12px; font-size: 0.75rem; color: var(--ink-faint); text-align: center; }
+    .overlay { display: none; position: fixed; inset: 0; background: rgba(28,26,24,0.5); z-index: 100; align-items: center; justify-content: center; padding: 16px; }
+    .overlay.zichtbaar { display: flex; }
+    .admin-modal { background: var(--warm-white); border-radius: 14px; padding: 32px; width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,0.18); position: relative; }
+    .modal-kop { font-family: 'Lora', serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 6px; }
+    .modal-sub { font-size: 0.85rem; color: var(--ink-light); margin-bottom: 24px; }
+    .btn-sluiten { position: absolute; top: 16px; right: 16px; background: none; border: 1px solid var(--border); border-radius: 6px; width: 28px; height: 28px; cursor: pointer; color: var(--ink-light); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; }
+    .btn-sluiten:hover { background: var(--cream); }
+    .pw-veld { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; background: var(--cream); outline: none; margin-bottom: 12px; }
+    .pw-veld:focus { border-color: var(--admin); }
+    .btn-inloggen { width: 100%; padding: 10px; background: var(--admin); color: #fff; border: none; border-radius: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 0.9rem; font-weight: 500; cursor: pointer; }
+    .btn-inloggen:hover { background: #1e4a6e; }
+    .pw-fout { font-size: 0.82rem; color: var(--red); margin-top: 8px; display: none; }
+    .pw-fout.zichtbaar { display: block; }
+    .admin-inhoud { display: none; }
+    .admin-inhoud.zichtbaar { display: block; }
+    .sectie-label { font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.07em; color: var(--ink-faint); margin-bottom: 10px; display: block; }
+    .scheidslijn { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+    .input-rij { display: flex; gap: 8px; align-items: flex-end; }
+    .input-rij .veld-input { flex: 1; margin-bottom: 0; }
+    .btn-opslaan { padding: 10px 18px; background: var(--admin); color: #fff; border: none; border-radius: 8px; font-family: 'Source Sans 3', sans-serif; font-size: 0.88rem; font-weight: 500; cursor: pointer; white-space: nowrap; }
+    .btn-opslaan:hover { background: #1e4a6e; }
+    .opgeslagen-melding { font-size: 0.8rem; color: var(--accent); margin-top: 8px; display: none; }
+    .opgeslagen-melding.zichtbaar { display: block; }
+    .aanmelding-rij { background: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; font-size: 0.85rem; }
+    .aanmelding-naam { font-weight: 500; color: var(--ink); margin-bottom: 2px; }
+    .aanmelding-contact { color: var(--ink-light); font-size: 0.8rem; margin-bottom: 4px; }
+    .aanmelding-vraag { color: var(--ink); font-size: 0.82rem; background: var(--warm-white); border-radius: 5px; padding: 6px 10px; margin-top: 6px; line-height: 1.5; }
+    .aanmelding-verwijder { background: none; border: none; color: var(--ink-faint); font-size: 0.75rem; cursor: pointer; text-decoration: underline; margin-top: 6px; }
+    .aanmelding-verwijder:hover { color: var(--red); }
+    .nul-melding { font-size: 0.85rem; color: var(--ink-faint); padding: 4px 0; }
+    .btn-uitloggen { width: 100%; padding: 8px 0; background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--ink-light); font-size: 0.82rem; cursor: pointer; margin-top: 4px; }
+    .btn-uitloggen:hover { background: var(--cream); }
+    .admin-fout { font-size: 0.82rem; color: var(--red); background: var(--red-bg); border-radius: 7px; padding: 8px 12px; margin-bottom: 12px; display: none; }
+    .admin-fout.zichtbaar { display: block; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      .pagina-grid { grid-template-columns: 1fr; }
+      .info-blok { position: static; order: -1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="kop">IT-vragenuurtje CIK</div>
+  <div class="ondertitel">Heeft u een vraag over uw computer, telefoon of tablet?<br>Meldt u aan voor het volgende vragenuurtje.</div>
+</header>
+
+<div class="pagina-grid">
+
+  <!-- ── LINKER KOLOM ── -->
+  <div class="hoofd-kolom">
+
+    <div class="laad-scherm" id="laad-scherm">Laden…</div>
+
+    <div class="verbinding-fout" id="verbinding-fout">
+      <strong>Kan geen verbinding maken</strong>
+      De Supabase-gegevens zijn nog niet ingevuld.
+    </div>
+
+    <div class="datum-blok" id="datum-blok" style="display:none">
+      <div class="datum-kalender">
+        <div class="datum-maand-kort" id="toon-maand"></div>
+        <div class="datum-dag-getal" id="toon-dag"></div>
+      </div>
+      <div style="flex:1">
+        <div class="datum-titel" id="toon-datum"></div>
+        <div class="datum-details">13:00 – 17:00</div>
+        <div class="teller-rij">
+          <div class="teller-balk-wrapper" id="teller-balk-wrapper" style="display:none">
+            <div class="teller-balk" id="teller-balk" style="width:0%"></div>
+          </div>
+          <div class="teller-label" id="teller-label">laden…</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-kaart" id="geen-sessie">
+      <div class="info-icoon">📅</div>
+      <div class="info-tekst">Er is momenteel geen vragenuurtje gepland.<br>Kom later terug.</div>
+    </div>
+
+    <div class="info-kaart" id="sessie-vol">
+      <div class="info-icoon">🙈</div>
+      <div class="info-tekst">Het vragenuurtje zit vol.<br>Je kunt je helaas niet meer aanmelden.</div>
+    </div>
+
+    <div class="form-card" id="form-card" style="display:none">
+      <div class="form-titel">Aanmelden</div>
+      <div class="veld-groep">
+        <label class="veld-label" for="naam">Naam</label>
+        <input class="veld-input" type="text" id="naam" placeholder="Uw naam" autocomplete="name" />
+      </div>
+      <div class="veld-groep">
+        <label class="veld-label" for="telefoon">Telefoonnummer</label>
+        <input class="veld-input" type="tel" id="telefoon" placeholder="06-12345678" autocomplete="tel" />
+      </div>
+      <div class="veld-groep">
+        <label class="veld-label" for="email">E-mailadres</label>
+        <input class="veld-input" type="email" id="email" placeholder="naam@voorbeeld.nl" autocomplete="email" />
+      </div>
+      <div class="veld-groep">
+        <label class="veld-label" for="vraag">Uw vraag of probleem</label>
+        <textarea class="veld-textarea" id="vraag" placeholder="Beschrijf kort waar u mee geholpen wilt worden…"></textarea>
+      </div>
+      <button class="btn-aanmelden" id="btn-aanmelden">Aanmelden</button>
+      <div class="fout-melding" id="fout-melding"></div>
+    </div>
+
+    <div class="succes-card" id="succes-card">
+      <div class="succes-icoon">✓</div>
+      <div class="succes-titel" id="succes-titel"></div>
+      <div class="succes-tekst">Uw aanmelding is ontvangen. Tot dan!</div>
+    </div>
+
+  </div><!-- einde hoofd-kolom -->
+
+  <!-- ── RECHTER KOLOM: INFO BLOK ── -->
+  <aside>
+    <div class="info-blok">
+      <div class="info-blok-titel">Handig om te weten</div>
+
+      <div class="info-item">
+        <div class="info-emoji">💻</div>
+        <div class="info-item-tekst">
+          <strong>Neem uw apparaat mee</strong>
+          Zo kunnen we direct meekijken. Dat werkt een stuk makkelijker dan beschrijven.
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-emoji">🔑</div>
+        <div class="info-item-tekst">
+          <strong>Wachtwoorden bij de hand</strong>
+          Voor sommige hulp zijn inloggegevens nodig. Neem ze mee als u die heeft, maar het hoeft niet.
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-emoji">🔌</div>
+        <div class="info-item-tekst">
+          <strong>Vergeet de oplader niet</strong>
+          Zeker bij laptops of tablets is het fijn als de batterij niet halverwege leeg is.
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-emoji">⏱️</div>
+        <div class="info-item-tekst">
+          <strong>Er zijn meer deelnemers</strong>
+          De tijd wordt eerlijk verdeeld. Soms lukt het om alles op te lossen, soms spreken we een vervolg af — dat is helemaal prima.
+        </div>
+      </div>
+
+      <div class="info-item">
+        <div class="info-emoji">😊</div>
+        <div class="info-item-tekst">
+          <strong>Geen vraag is te klein</strong>
+          Of het nu gaat om een e-mail instellen, een app die niet werkt of iets anders — alles mag gevraagd worden.
+        </div>
+      </div>
+
+      <hr class="info-scheidslijn" />
+      <div class="info-voetnoot">Vragen vooraf? Neem gerust contact op met de kerkadministratie.</div>
+    </div>
+  </aside>
+
+</div><!-- einde pagina-grid -->
+
+<button class="admin-link" id="open-admin">Beheer</button>
+<footer>IT-vragenuurtje CIK</footer>
+
+<!-- ══ ADMIN OVERLAY ══════════════════════════════════════════ -->
+<div class="overlay" id="admin-overlay">
+  <div class="admin-modal">
+    <button class="btn-sluiten" id="sluit-admin">✕</button>
+    <div id="login-scherm">
+      <div class="modal-kop">Beheer</div>
+      <div class="modal-sub">Voer het wachtwoord in.</div>
+      <input class="pw-veld" type="password" id="pw-veld" placeholder="Wachtwoord" />
+      <button class="btn-inloggen" id="btn-inloggen">Inloggen</button>
+      <div class="pw-fout" id="pw-fout">Onjuist wachtwoord.</div>
+    </div>
+    <div class="admin-inhoud" id="admin-inhoud">
+      <div class="modal-kop">Beheer</div>
+      <div class="modal-sub">Stel de sessiedatum in en bekijk aanmeldingen.</div>
+      <div class="admin-fout" id="admin-fout"></div>
+      <span class="sectie-label">Sessiedatum</span>
+      <div class="input-rij">
+        <input class="veld-input" type="date" id="admin-datum" />
+        <button class="btn-opslaan" id="btn-datum-opslaan">Opslaan</button>
+      </div>
+      <div class="opgeslagen-melding" id="datum-opgeslagen">✓ Datum opgeslagen</div>
+      <div style="margin-top:14px">
+        <span class="sectie-label" style="margin-bottom:6px">Maximum aanmeldingen</span>
+        <div style="font-size:0.82rem;color:var(--ink-light);margin-bottom:8px">Laat leeg voor geen limiet.</div>
+        <div class="input-rij">
+          <input class="veld-input" type="number" id="admin-cap" min="1" placeholder="bijv. 10" style="max-width:120px" />
+          <button class="btn-opslaan" id="btn-cap-opslaan">Opslaan</button>
+        </div>
+        <div class="opgeslagen-melding" id="cap-opgeslagen">✓ Maximum opgeslagen</div>
+      </div>
+      <hr class="scheidslijn" />
+      <span class="sectie-label" id="aanmeld-label">Aanmeldingen</span>
+      <div id="admin-lijst"></div>
+      <hr class="scheidslijn" />
+      <button class="btn-uitloggen" id="btn-uitloggen">Uitloggen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL  = "https://fvxqvgcrfpinhuarsvxy.supabase.co";
+const SUPABASE_KEY  = "sb_publishable_aeYI80DOnGmyvXQtWR0IhQ_NTwL32Ih";
+const FORMSPREE_ID  = "mbdznqlk";
+const WACHTWOORD    = "LekkereKoekeh123!";
+
+const KLAAR = SUPABASE_URL !== "JOUW_SUPABASE_URL";
+const MAANDEN_KORT = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const MAANDEN_LANG = ['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const DAGEN = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+
+async function dbGet(tabel, filter = '') {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabel}?${filter}`, {
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function dbPost(tabel, body) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabel}`, {
+    method: 'POST',
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json', Prefer: 'return=representation' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function dbPatch(tabel, filter, body) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabel}?${filter}`, {
+    method: 'PATCH',
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json', Prefer: 'return=representation' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+async function dbDelete(tabel, filter) {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/${tabel}?${filter}`, {
+    method: 'DELETE',
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+  });
+  if (!r.ok) throw new Error(await r.text());
+}
+
+function parseer(str) { const [j,m,d] = str.split('-').map(Number); return new Date(j, m-1, d); }
+function mooiDatum(str) { const d = parseer(str); return `${DAGEN[d.getDay()]} ${d.getDate()} ${MAANDEN_LANG[d.getMonth()]} ${d.getFullYear()}`; }
+function zichtbaar(id, ja) { document.getElementById(id).classList.toggle('zichtbaar', ja); }
+
+async function laadPagina() {
+  document.getElementById('laad-scherm').style.display = 'none';
+  if (!KLAAR) { zichtbaar('verbinding-fout', true); return; }
+  try {
+    const configs = await dbGet('sessie_config', 'select=*&order=id.desc&limit=1');
+    const config = configs[0] || {};
+    const datumStr = config.datum || null;
+    const cap = config.max_aanmeldingen || null;
+    const aanmeldingen = datumStr ? await dbGet('aanmeldingen', `select=id&sessie_datum=eq.${datumStr}`) : [];
+    const aantal = aanmeldingen.length;
+    const vol = cap && aantal >= cap;
+
+    if (datumStr) {
+      const d = parseer(datumStr);
+      document.getElementById('toon-dag').textContent = d.getDate();
+      document.getElementById('toon-maand').textContent = MAANDEN_KORT[d.getMonth()].toUpperCase();
+      document.getElementById('toon-datum').textContent = mooiDatum(datumStr);
+      if (cap) {
+        document.getElementById('teller-balk-wrapper').style.display = 'block';
+        document.getElementById('teller-balk').style.width = Math.min(100, Math.round(aantal / cap * 100)) + '%';
+        document.getElementById('teller-label').textContent = `${aantal} / ${cap} aanmeldingen`;
+        if (vol) document.getElementById('teller-label').classList.add('vol');
+      } else {
+        document.getElementById('teller-label').textContent =
+          aantal === 0 ? 'Nog geen aanmeldingen' : aantal === 1 ? '1 aanmelding' : `${aantal} aanmeldingen`;
+      }
+      document.getElementById('datum-blok').style.display = 'flex';
+      zichtbaar('geen-sessie', false);
+      zichtbaar('sessie-vol', vol);
+      document.getElementById('form-card').style.display = vol ? 'none' : 'block';
+    } else {
+      document.getElementById('datum-blok').style.display = 'none';
+      zichtbaar('geen-sessie', true);
+      document.getElementById('form-card').style.display = 'none';
+    }
+  } catch (e) { zichtbaar('verbinding-fout', true); console.error(e); }
+}
+
+document.getElementById('btn-aanmelden').addEventListener('click', async () => {
+  const naam = document.getElementById('naam').value.trim();
+  const telefoon = document.getElementById('telefoon').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const vraag = document.getElementById('vraag').value.trim();
+  const fout = document.getElementById('fout-melding');
+  fout.classList.remove('zichtbaar');
+  if (!naam)                       { fout.textContent = 'Vul uw naam in.';                      fout.classList.add('zichtbaar'); return; }
+  if (!telefoon)                   { fout.textContent = 'Vul uw telefoonnummer in.';             fout.classList.add('zichtbaar'); return; }
+  if (!email || !email.includes('@')) { fout.textContent = 'Vul een geldig e-mailadres in.';    fout.classList.add('zichtbaar'); return; }
+  if (!vraag)                      { fout.textContent = 'Beschrijf kort uw vraag of probleem.'; fout.classList.add('zichtbaar'); return; }
+  const btn = document.getElementById('btn-aanmelden');
+  btn.disabled = true; btn.textContent = 'Bezig…';
+  try {
+    const configs = await dbGet('sessie_config', 'select=*&order=id.desc&limit=1');
+    const config = configs[0] || {};
+    const datumStr = config.datum;
+    const cap = config.max_aanmeldingen || null;
+    const aanmeldingen = await dbGet('aanmeldingen', `select=id&sessie_datum=eq.${datumStr}`);
+    if (cap && aanmeldingen.length >= cap) {
+      fout.textContent = 'Het vragenuurtje is helaas net volgeboekt.';
+      fout.classList.add('zichtbaar');
+      btn.disabled = false; btn.textContent = 'Aanmelden';
+      laadPagina(); return;
+    }
+    await dbPost('aanmeldingen', { sessie_datum: datumStr, naam, telefoon, email, vraag });
+    if (FORMSPREE_ID && FORMSPREE_ID !== 'JOUW_FORMSPREE_ID') {
+      await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ naam, telefoon, email, vraag, sessie: mooiDatum(datumStr), _subject: `Nieuwe aanmelding IT-vragenuurtje — ${naam}` })
+      }).catch(() => {});
+    }
+    document.getElementById('form-card').style.display = 'none';
+    document.getElementById('succes-titel').textContent = `Tot ${mooiDatum(datumStr)}!`;
+    zichtbaar('succes-card', true);
+    laadPagina();
+  } catch (e) {
+    fout.textContent = 'Er ging iets mis. Probeer het opnieuw.';
+    fout.classList.add('zichtbaar');
+    btn.disabled = false; btn.textContent = 'Aanmelden';
+    console.error(e);
+  }
+});
+
+let ingelogd = false;
+document.getElementById('open-admin').addEventListener('click', () => {
+  document.getElementById('admin-overlay').classList.add('zichtbaar');
+  document.getElementById('pw-veld').value = '';
+  document.getElementById('pw-fout').classList.remove('zichtbaar');
+  document.getElementById('login-scherm').style.display = ingelogd ? 'none' : 'block';
+  document.getElementById('admin-inhoud').classList.toggle('zichtbaar', ingelogd);
+  if (ingelogd) laadAdminInhoud();
+});
+function sluitAdmin() { document.getElementById('admin-overlay').classList.remove('zichtbaar'); laadPagina(); }
+document.getElementById('sluit-admin').addEventListener('click', sluitAdmin);
+document.getElementById('admin-overlay').addEventListener('click', e => { if (e.target === document.getElementById('admin-overlay')) sluitAdmin(); });
+document.getElementById('btn-inloggen').addEventListener('click', () => {
+  if (document.getElementById('pw-veld').value === WACHTWOORD) {
+    ingelogd = true;
+    document.getElementById('login-scherm').style.display = 'none';
+    document.getElementById('admin-inhoud').classList.add('zichtbaar');
+    laadAdminInhoud();
+  } else { document.getElementById('pw-fout').classList.add('zichtbaar'); }
+});
+document.getElementById('pw-veld').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('btn-inloggen').click(); });
+document.getElementById('btn-uitloggen').addEventListener('click', () => { ingelogd = false; sluitAdmin(); });
+
+async function laadAdminInhoud() {
+  const adminFout = document.getElementById('admin-fout');
+  adminFout.classList.remove('zichtbaar');
+  try {
+    const configs = await dbGet('sessie_config', 'select=*&order=id.desc&limit=1');
+    const config = configs[0] || {};
+    if (config.datum) document.getElementById('admin-datum').value = config.datum;
+    if (config.max_aanmeldingen) document.getElementById('admin-cap').value = config.max_aanmeldingen;
+    await renderAdminLijst(config.datum);
+  } catch(e) {
+    adminFout.textContent = 'Kan gegevens niet laden. Controleer de Supabase-instellingen.';
+    adminFout.classList.add('zichtbaar');
+  }
+}
+
+async function renderAdminLijst(datumStr) {
+  const lijst = document.getElementById('admin-lijst');
+  const label = document.getElementById('aanmeld-label');
+  lijst.innerHTML = '<div class="nul-melding">Laden…</div>';
+  if (!datumStr) { label.textContent = 'Aanmeldingen'; lijst.innerHTML = '<div class="nul-melding">Geen datum ingesteld.</div>'; return; }
+  const aanmeldingen = await dbGet('aanmeldingen', `select=*&sessie_datum=eq.${datumStr}&order=created_at.asc`);
+  label.textContent = `Aanmeldingen (${aanmeldingen.length})`;
+  lijst.innerHTML = '';
+  if (!aanmeldingen.length) { lijst.innerHTML = '<div class="nul-melding">Nog geen aanmeldingen.</div>'; return; }
+  aanmeldingen.forEach(a => {
+    const rij = document.createElement('div'); rij.className = 'aanmelding-rij';
+    rij.innerHTML = `<div class="aanmelding-naam">${a.naam}</div><div class="aanmelding-contact">${a.telefoon} · ${a.email}</div><div class="aanmelding-vraag">"${a.vraag}"</div><button class="aanmelding-verwijder" data-id="${a.id}">Verwijder</button>`;
+    lijst.appendChild(rij);
+  });
+  lijst.querySelectorAll('.aanmelding-verwijder').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Aanmelding verwijderen?')) return;
+      await dbDelete('aanmeldingen', `id=eq.${btn.dataset.id}`);
+      laadAdminInhoud(); laadPagina();
+    });
+  });
+}
+
+document.getElementById('btn-datum-opslaan').addEventListener('click', async () => {
+  const val = document.getElementById('admin-datum').value;
+  if (!val) return;
+  const adminFout = document.getElementById('admin-fout');
+  adminFout.classList.remove('zichtbaar');
+  try {
+    const bestaand = await dbGet('sessie_config', 'select=id&order=id.desc&limit=1');
+    if (bestaand.length) { await dbPatch('sessie_config', `id=eq.${bestaand[0].id}`, { datum: val }); }
+    else { await dbPost('sessie_config', { datum: val }); }
+    document.getElementById('datum-opgeslagen').classList.add('zichtbaar');
+    setTimeout(() => document.getElementById('datum-opgeslagen').classList.remove('zichtbaar'), 2500);
+    await renderAdminLijst(val); laadPagina();
+  } catch(e) { adminFout.textContent = 'Opslaan mislukt.'; adminFout.classList.add('zichtbaar'); }
+});
+
+document.getElementById('btn-cap-opslaan').addEventListener('click', async () => {
+  const val = document.getElementById('admin-cap').value;
+  const adminFout = document.getElementById('admin-fout');
+  adminFout.classList.remove('zichtbaar');
+  try {
+    const bestaand = await dbGet('sessie_config', 'select=id&order=id.desc&limit=1');
+    const capVal = val ? parseInt(val) : null;
+    if (bestaand.length) { await dbPatch('sessie_config', `id=eq.${bestaand[0].id}`, { max_aanmeldingen: capVal }); }
+    else { await dbPost('sessie_config', { max_aanmeldingen: capVal }); }
+    document.getElementById('cap-opgeslagen').classList.add('zichtbaar');
+    setTimeout(() => document.getElementById('cap-opgeslagen').classList.remove('zichtbaar'), 2500);
+    laadPagina();
+  } catch(e) { adminFout.textContent = 'Opslaan mislukt.'; adminFout.classList.add('zichtbaar'); }
+});
+
+laadPagina();
+</script>
+</body>
+</html>
